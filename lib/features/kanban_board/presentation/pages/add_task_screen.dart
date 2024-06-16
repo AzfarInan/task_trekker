@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_trekker/core/theme/app_colors.dart';
 import 'package:task_trekker/core/base/base_state.dart';
 import 'package:task_trekker/features/kanban_board/presentation/manager/add_task/add_task_cubit.dart';
-import 'package:task_trekker/features/kanban_board/presentation/manager/get_task/get_task_cubit.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/task_manager/task_manager_cubit.dart';
 import 'package:task_trekker/features/shared/presentation/widgets/button.dart';
 
 class AddTaskScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class AddTaskScreenState extends State<AddTaskScreen> {
       body: BlocListener<AddTaskCubit, BaseState>(
         listener: (context, state) {
           if (state is SuccessState) {
-            BlocProvider.of<GetTaskCubit>(context).addTask(state.data);
+            BlocProvider.of<TaskManagerCubit>(context).addTask(state.data);
             Navigator.of(context).pop();
           } else if (state is ErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(

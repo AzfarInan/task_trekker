@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:task_trekker/core/theme/app_colors.dart';
 import 'package:task_trekker/core/base/base_state.dart';
 import 'package:task_trekker/core/theme/text_theme.dart';
 import 'package:task_trekker/features/kanban_board/domain/entities/task_entity.dart';
 import 'package:task_trekker/features/kanban_board/presentation/manager/get_task/get_task_cubit.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/task_manager/task_manager_cubit.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/update_task/update_task_cubit.dart';
 import 'package:task_trekker/features/kanban_board/presentation/widgets/primary_app_bar.dart';
 
 part '../widgets/kanban_board.dart';
 part '../widgets/board_column.dart';
+part '../widgets/task_item.dart';
 
 class KanbanDashboardScreen extends StatelessWidget {
   const KanbanDashboardScreen({super.key});
@@ -25,7 +29,7 @@ class KanbanDashboardScreen extends StatelessWidget {
           } else if (state is ErrorState) {
             return Center(child: Text(state.data));
           } else if (state is SuccessState) {
-            return KanbanBoard();
+            return KanbanBoard(list: state.data);
           }
 
           return const SizedBox();

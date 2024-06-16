@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_trekker/features/kanban_board/presentation/manager/add_task/add_task_cubit.dart';
 import 'package:task_trekker/features/kanban_board/presentation/manager/get_task/get_task_cubit.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/task_manager/task_manager_cubit.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/update_task/update_task_cubit.dart';
 import 'core/dependency/injection.dart';
 import 'core/navigation/navigator_service.dart';
 import 'core/theme/theme.dart';
@@ -21,6 +23,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<GetTaskCubit>(create: (_) => getIt<GetTaskCubit>()),
         BlocProvider<AddTaskCubit>(create: (_) => getIt<AddTaskCubit>()),
+        BlocProvider<TaskManagerCubit>(
+            create: (_) => getIt<TaskManagerCubit>()),
+        BlocProvider<UpdateTaskCubit>(create: (_) => getIt<UpdateTaskCubit>()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
