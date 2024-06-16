@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:task_trekker/core/theme/app_colors.dart';
 import 'package:task_trekker/core/theme/text_theme.dart';
 
@@ -23,9 +24,12 @@ class PrimaryAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: const Icon(
             Icons.add_circle_rounded,
             color: AppColors.black,
+            size: 32,
             semanticLabel: "Add Task",
           ),
-          onPressed: () {},
+          onPressed: () {
+            context.pushNamed('add-task');
+          },
         ),
       ],
     );

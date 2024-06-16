@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/add_task/add_task_cubit.dart';
 import 'package:task_trekker/features/kanban_board/presentation/manager/get_task/get_task_cubit.dart';
 import 'core/dependency/injection.dart';
 import 'core/navigation/navigator_service.dart';
@@ -18,9 +19,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<GetTaskCubit>(
-          create: (_) => getIt<GetTaskCubit>(),
-        ),
+        BlocProvider<GetTaskCubit>(create: (_) => getIt<GetTaskCubit>()),
+        BlocProvider<AddTaskCubit>(create: (_) => getIt<AddTaskCubit>()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,

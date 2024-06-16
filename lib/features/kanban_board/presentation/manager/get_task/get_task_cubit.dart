@@ -61,6 +61,13 @@ class GetTaskCubit extends Cubit<BaseState> {
     }
   }
 
+  void addTask(TaskEntity taskEntity) {
+    emit(const LoadingAgainState());
+    todoTasks.add(taskEntity);
+    tasks[0] = todoTasks;
+    emit(SuccessState(data: tasks)); // Emit updated state
+  }
+
   void moveTask(int fromColumn, int toColumn, TaskEntity task) {
     emit(const LoadingAgainState());
     tasks[fromColumn].remove(task);
