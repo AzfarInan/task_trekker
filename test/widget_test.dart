@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lottie/lottie.dart';
 import 'package:task_trekker/core/dependency/injection.dart';
+import 'package:task_trekker/features/kanban_board/presentation/pages/kanban_dashboard_screen.dart';
 import 'package:task_trekker/main.dart';
 
 void main() {
@@ -8,17 +9,17 @@ void main() {
     configureDependencies();
   });
 
-  testWidgets('Splash Screen shows a CircularProgressIndicator', (WidgetTester tester) async {
-    // Save the original ErrorWidget.builder
-    final originalErrorWidgetBuilder = ErrorWidget.builder;
-
+  testWidgets('Splash Screen shows an Animation and navigates to KanbanDashboardScreen', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 
-    // Verify that a CircularProgressIndicator is displayed.
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    // Verify that the splash screen is displayed
+    expect(find.byType(Lottie), findsOneWidget);
 
-    // Reset the ErrorWidget.builder to its original value
-    ErrorWidget.builder = originalErrorWidgetBuilder;
+    // Simulate the delay
+    await tester.pumpAndSettle(const Duration(seconds: 10));
+
+    // Verify that the KanbanDashboardScreen is displayed
+    expect(find.byType(KanbanDashboardScreen), findsOneWidget);
   });
 }
