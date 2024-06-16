@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 
 class TaskEntity extends Equatable {
   final String id;
@@ -18,7 +19,7 @@ class TaskEntity extends Equatable {
   final DateTime createdAt;
   final Due? due;
   final String url;
-  final Duration? duration;
+  final TaskDuration? duration;
 
   const TaskEntity({
     required this.id,
@@ -40,6 +41,41 @@ class TaskEntity extends Equatable {
     required this.url,
     this.duration,
   });
+
+  bool isTodoTask() => labels.contains('TODO');
+  bool isActiveTask() => labels.contains('Active');
+  bool isInProgressTask() => labels.contains('In Progress');
+  bool isCompletedTask() => labels.contains('Completed');
+
+  String getPriority() {
+    switch (priority) {
+      case 1:
+        return 'LOW';
+      case 2:
+        return 'MEDIUM';
+      case 3:
+        return 'HIGH';
+      case 4:
+        return 'URGENT';
+      default:
+        return 'LOW';
+    }
+  }
+
+  String getDuration() {
+    if (duration != null) {
+      return '${duration!.amount} ${duration!.unit}s';
+    }
+    return '0 minutes';
+  }
+
+  String getCompletedOn() {
+    if (due != null) {
+      return due!.date.toString();
+    }
+
+    return DateFormat('yyyy-MM-dd').format(DateTime.now());
+  }
 
   @override
   List<Object?> get props => [
@@ -70,18 +106,6 @@ class Due extends Equatable {
     this.datetime,
   });
 
-  /// toJson method
-  Map<String, dynamic> toJson() {
-    return {
-      'date': date.toIso8601String(),
-      'timezone': timezone,
-      'date_string': dateString,
-      'lang': lang,
-      'is_recurring': isRecurring,
-      'datetime': datetime?.toIso8601String(),
-    };
-  }
-
   @override
   List<Object?> get props => [
         date,
@@ -90,5 +114,21 @@ class Due extends Equatable {
         lang,
         isRecurring,
         datetime,
+      ];
+}
+
+class TaskDuration extends Equatable {
+  final int amount;
+  final String unit;
+
+  const TaskDuration({
+    required this.amount,
+    required this.unit,
+  });
+
+  @override
+  List<Object?> get props => [
+        amount,
+        unit,
       ];
 }

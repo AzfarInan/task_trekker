@@ -43,39 +43,12 @@ class TaskModel extends TaskEntity {
       due: json['due'] != null ? Due.fromJson(json['due']) : null,
       url: json['url'],
       duration: json['duration'] != null
-          ? Duration(
-              minutes: json['duration']['amount'],
+          ? TaskDuration(
+              amount: json['duration']['amount'],
+              unit: json['duration']['unit'],
             )
           : null,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'assigner_id': assignerId,
-      'assignee_id': assigneeId,
-      'project_id': projectId,
-      'section_id': sectionId,
-      'parent_id': parentId,
-      'order': order,
-      'content': content,
-      'description': description,
-      'is_completed': isCompleted,
-      'labels': labels,
-      'priority': priority,
-      'comment_count': commentCount,
-      'creator_id': creatorId,
-      'created_at': createdAt.toIso8601String(),
-      'due': due?.toJson(),
-      'url': url,
-      'duration': duration != null
-          ? {
-              'amount': duration!.inMinutes,
-              'unit': 'minute',
-            }
-          : null,
-    };
   }
 }
 
@@ -106,17 +79,6 @@ class Due extends Equatable {
       datetime:
           json['datetime'] != null ? DateTime.parse(json['datetime']) : null,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'date': date.toIso8601String(),
-      'timezone': timezone,
-      'string': dateString,
-      'lang': lang,
-      'is_recurring': isRecurring,
-      'datetime': datetime?.toIso8601String(),
-    };
   }
 
   @override

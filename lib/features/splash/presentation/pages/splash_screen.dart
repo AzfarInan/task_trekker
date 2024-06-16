@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return BlocListener<GetTaskCubit, BaseState>(
       listener: (context, state) {
         if (state is SuccessState) {
-          context.pushNamed('kanban-dashboard');
+          context.pushReplacementNamed('kanban-dashboard');
         }
       },
       child: Scaffold(

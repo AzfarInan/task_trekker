@@ -18,6 +18,15 @@ class LoadingState<T> extends BaseState {
   List<Object?> get props => [];
 }
 
+class LoadingAgainState<T> extends BaseState {
+  const LoadingAgainState({this.data});
+
+  final T? data;
+
+  @override
+  List<Object?> get props => [];
+}
+
 class SuccessState<T> extends BaseState {
   const SuccessState({this.data});
 

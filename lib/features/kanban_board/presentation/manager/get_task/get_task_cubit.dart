@@ -13,7 +13,19 @@ class GetTaskCubit extends Cubit<BaseState> {
 
   final GetTasks useCase;
 
-  final List<TaskEntity> tasks = [];
+  final List<TaskEntity> todoTasks = [];
+  final List<TaskEntity> inProgressTasks = [];
+  final List<TaskEntity> doneTasks = [];
+  TaskEntity? activeTask;
+
+  final List<List<TaskEntity>> tasks = [
+    [],
+    [],
+    [],
+  ];
+
+  int draggedFromColumn = 0;
+  TaskEntity? draggedTask;
 
   Future<void> getTasks() async {
     emit(const LoadingState());
@@ -22,12 +34,37 @@ class GetTaskCubit extends Cubit<BaseState> {
       result.fold(
         (l) => emit(ErrorState(data: l.error!.message!)),
         (r) {
-          tasks.addAll(r);
+          List<TaskEntity> temp = r;
+
+          for (var element in temp) {
+            if (element.isTodoTask()) {
+              todoTasks.add(element);
+            } else if (element.isInProgressTask()) {
+              inProgressTasks.add(element);
+            } else if (element.isCompletedTask()) {
+              doneTasks.add(element);
+            } else if (element.isActiveTask()) {
+              activeTask = element;
+              inProgressTasks.add(element);
+            }
+          }
+
+          tasks[0] = todoTasks;
+          tasks[1] = inProgressTasks;
+          tasks[2] = doneTasks;
+
           return emit(SuccessState(data: r));
         },
       );
     } catch (e) {
       emit(const ErrorState(data: 'Something went wrong'));
     }
+  }
+
+  void moveTask(int fromColumn, int toColumn, TaskEntity task) {
+    emit(const LoadingAgainState());
+    tasks[fromColumn].remove(task);
+    tasks[toColumn].add(task);
+    emit(SuccessState(data: tasks)); // Emit updated state
   }
 }

@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_trekker/core/theme/app_colors.dart';
+import 'package:task_trekker/core/base/base_state.dart';
 import 'package:task_trekker/core/theme/text_theme.dart';
+import 'package:task_trekker/features/kanban_board/domain/entities/task_entity.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/get_task/get_task_cubit.dart';
+import 'package:task_trekker/features/kanban_board/presentation/widgets/primary_app_bar.dart';
+
+part '../widgets/kanban_board.dart';
+part '../widgets/board_column.dart';
 
 class KanbanDashboardScreen extends StatelessWidget {
   const KanbanDashboardScreen({super.key});
@@ -8,43 +16,21 @@ class KanbanDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          backgroundColor: AppColors.primary,
-          title: Text(
-            "Kanban Board",
-            style: textTheme.displaySmall!.copyWith(
-              color: AppColors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        body: Container(
-          width: double.infinity,
-          color: Colors.white,
-          padding: const EdgeInsets.all(16),
-          child: const Column(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 16.0),
-                  child: Text(
-                    "Kanban Board",
-                    style: TextStyle(
-                      fontFamily: "Roboto",
-                      fontSize: 22,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                      height: 25.78 / 22,
-                    ),
-                  ),
-                ),
-              ),
-              // KanbanBoardWidget(),
-            ],
-          ),
-        ));
+      appBar: const PrimaryAppBar(),
+      backgroundColor: AppColors.white,
+      body: BlocBuilder<GetTaskCubit, BaseState>(
+        builder: (context, state) {
+          if (state is LoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is ErrorState) {
+            return Center(child: Text(state.data));
+          } else if (state is SuccessState) {
+            return KanbanBoard();
+          }
+
+          return const SizedBox();
+        },
+      ),
+    );
   }
 }
