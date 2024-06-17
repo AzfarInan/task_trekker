@@ -7,11 +7,15 @@ import 'package:task_trekker/core/theme/text_theme.dart';
 class StopwatchWidget extends StatefulWidget {
   final int initialMinutes;
   final ValueChanged<Duration> onStop;
+  final ValueChanged<Duration> onStart;
+  final bool? autoStart;
 
   const StopwatchWidget({
     super.key,
     this.initialMinutes = 0,
     required this.onStop,
+    required this.onStart,
+    this.autoStart = false,
   });
 
   @override
@@ -26,7 +30,11 @@ class StopwatchWidgetState extends State<StopwatchWidget> {
   @override
   void initState() {
     super.initState();
+
     _elapsed = Duration(minutes: widget.initialMinutes);
+    if (widget.autoStart!) {
+      _startTimer();
+    }
   }
 
   void _toggleTimer() {
@@ -42,6 +50,7 @@ class StopwatchWidgetState extends State<StopwatchWidget> {
       _isRunning = true;
     });
     _timer?.cancel();
+    widget.onStart(_elapsed);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _elapsed += const Duration(seconds: 1);

@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:task_trekker/features/kanban_board/domain/entities/task_entity.dart';
 
 class TaskModel extends TaskEntity {
-  const TaskModel({
+  TaskModel({
     required super.id,
     super.assignerId,
     super.assigneeId,

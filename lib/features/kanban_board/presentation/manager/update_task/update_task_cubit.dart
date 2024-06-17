@@ -10,32 +10,6 @@ class UpdateTaskCubit extends Cubit<BaseState> {
 
   final UpdateTask usecase;
 
-  Future<void> changeEverything({
-    required String label,
-    required String taskId,
-    required String dueDate,
-    required int duration,
-  }) async {
-    emit(const LoadingState());
-    try {
-      final result = await usecase(
-        UpdateTaskRequestModel(
-          id: taskId,
-          labels: [label],
-          due_date: dueDate,
-          duration: duration,
-          duration_unit: 'minute',
-        ),
-      );
-      result.fold(
-        (l) => emit(ErrorState(data: l.error!.message!)),
-        (r) => emit(SuccessState(data: r)),
-      );
-    } catch (e) {
-      emit(const ErrorState(data: 'Something went wrong'));
-    }
-  }
-
   Future<void> changeLabel({
     required int index,
     required String taskId,
@@ -66,16 +40,13 @@ class UpdateTaskCubit extends Cubit<BaseState> {
     }
   }
 
-  Future<void> changeDueDate({
-    required String taskId,
-    required String dueDate,
-  }) async {
+  Future<void> activateTask({required String taskId}) async {
     emit(const LoadingState());
     try {
       final result = await usecase(
         UpdateTaskRequestModel(
           id: taskId,
-          due_date: dueDate,
+          labels: ['ACTIVE'],
         ),
       );
       result.fold(
@@ -87,7 +58,7 @@ class UpdateTaskCubit extends Cubit<BaseState> {
     }
   }
 
-  Future<void> changeDuration({
+  Future<void> deactivateTask({
     required String taskId,
     required int duration,
   }) async {
@@ -96,6 +67,7 @@ class UpdateTaskCubit extends Cubit<BaseState> {
       final result = await usecase(
         UpdateTaskRequestModel(
           id: taskId,
+          labels: ['In Progress'],
           duration: duration,
           duration_unit: 'minute',
         ),

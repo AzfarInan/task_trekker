@@ -1,11 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_trekker/core/base/base_state.dart';
+import 'package:task_trekker/core/cache_service/cached_task_entity.dart';
 import 'package:task_trekker/core/theme/app_colors.dart';
+import 'package:task_trekker/core/theme/text_theme.dart';
 import 'package:task_trekker/features/kanban_board/domain/entities/task_entity.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/task_manager/task_manager_cubit.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/task_timer/task_timer_cubit.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/update_task/update_task_cubit.dart';
+import 'package:task_trekker/features/kanban_board/presentation/widgets/stopwatch.dart';
 
-class TaskDetailsScreen extends StatelessWidget {
+class TaskDetailsScreen extends StatefulWidget {
   const TaskDetailsScreen({super.key, required this.task});
 
   final TaskEntity task;
+
+  @override
+  State<TaskDetailsScreen> createState() => _TaskDetailsScreenState();
+}
+
+class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
+  int activatedTime = 0;
+  bool autoStart = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    activatedTime = widget.task.getActivatedTime();
+    if (widget.task.isActiveTask()) {
+      BlocProvider.of<TaskTimerCubit>(context).getTask(widget.task.id);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +40,159 @@ class TaskDetailsScreen extends StatelessWidget {
         title: const Text('Add Task'),
         backgroundColor: AppColors.primary,
       ),
-      body: Column(
-        children: [
-          Text(task.content),
-          Text(task.priority.toString()),
-          Text(task.labels.first),
-        ],
+      body: BlocConsumer<TaskTimerCubit, BaseState>(
+        listener: (context, state) {
+          if (state is GetTaskSuccessState) {
+            setState(() {
+              activatedTime = state.data.taskActivationTime
+                      .difference(DateTime.now())
+                      .inMinutes *
+                  -1;
+              activatedTime += widget.task.getActivatedTime();
+
+              autoStart = true;
+            });
+          } else if (state is RemoveTaskSuccessState) {
+            setState(() {
+              autoStart = false;
+            });
+          }
+          else if (state is ErrorState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: AppColors.error,
+                content: Text(
+                  state.data.toString(),
+                  style: textTheme.bodyLarge,
+                ),
+              ),
+            );
+          }
+        },
+        buildWhen: (previous, current) => previous != current,
+        builder: (context, state) {
+          if (state is LoadingState) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primary,
+              ),
+            );
+          }
+
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                viewItem(title: 'Title', body: widget.task.content),
+                viewItem(title: 'Description', body: widget.task.description),
+                viewItem(
+                  title: 'Priority',
+                  body: widget.task.getPriority(),
+                  icon: const Icon(
+                    Icons.flag_sharp,
+                    color: AppColors.golden,
+                  ),
+                ),
+                if (widget.task.isInProgressTask() ||
+                    widget.task.isActiveTask()) ...[
+                  titleText('Track Time'),
+                  const SizedBox(height: 4),
+                  StopwatchWidget(
+                    onStop: (duration) {
+                      /// print
+                      print("On Stop");
+
+                      /// Remove The Task Time Locally
+                      BlocProvider.of<TaskTimerCubit>(context)
+                          .removeTask(widget.task.id);
+
+                      /// Activate task label
+                      BlocProvider.of<UpdateTaskCubit>(context).deactivateTask(
+                        taskId: widget.task.id,
+                        duration: duration.inMinutes,
+                      );
+
+                      BlocProvider.of<TaskManagerCubit>(context)
+                          .inactiveActiveTask(widget.task, duration.inMinutes);
+                    },
+                    onStart: (duration) {
+                      /// print
+                      print("On Start");
+
+                      if (!autoStart) {
+                        /// Save The Task Time Locally
+                        BlocProvider.of<TaskTimerCubit>(context).saveTask(
+                          CachedTaskEntity(
+                            taskId: widget.task.id,
+                            taskActivationTime: DateTime.now().add(duration),
+                          ),
+                        );
+
+                        /// Activate task label
+                        BlocProvider.of<UpdateTaskCubit>(context)
+                            .activateTask(taskId: widget.task.id);
+
+                        BlocProvider.of<TaskManagerCubit>(context)
+                            .updateActiveTask(widget.task);
+                      }
+                    },
+                    autoStart: autoStart,
+                    initialMinutes: activatedTime,
+                  ),
+                ] else ...[
+                  viewItem(
+                    title: 'Task Duration',
+                    body: widget.task.duration != null
+                        ? '${widget.task.duration!.amount} minutes'
+                        : '0 Minutes',
+                    icon: const Icon(
+                      Icons.timer,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget viewItem({required String title, required String body, Widget? icon}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        titleText(title),
+        Row(
+          children: [
+            icon ?? const SizedBox(),
+            icon != null ? const SizedBox(width: 6) : const SizedBox(),
+            bodyText(body),
+          ],
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Text titleText(String title) {
+    return Text(
+      '$title:',
+      style: textTheme.bodyLarge!.copyWith(
+        color: AppColors.primary,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Text bodyText(String body) {
+    return Text(
+      body,
+      style: textTheme.bodyLarge!.copyWith(
+        color: AppColors.black,
+        fontWeight: FontWeight.w500,
       ),
     );
   }

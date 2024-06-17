@@ -19,9 +19,9 @@ class TaskEntity extends Equatable {
   final DateTime createdAt;
   final Due? due;
   final String url;
-  final TaskDuration? duration;
+  TaskDuration? duration;
 
-  const TaskEntity({
+  TaskEntity({
     required this.id,
     this.assignerId,
     this.assigneeId,
@@ -43,9 +43,13 @@ class TaskEntity extends Equatable {
   });
 
   bool isTodoTask() => labels.contains('TODO');
-  bool isActiveTask() => labels.contains('Active');
+  bool isActiveTask() => labels.contains('ACTIVE');
   bool isInProgressTask() => labels.contains('In Progress');
   bool isCompletedTask() => labels.contains('Completed');
+
+  void updateDuration(int value) {
+    duration = TaskDuration(amount: value, unit: 'minute');
+  }
 
   String getPriority() {
     switch (priority) {
@@ -75,6 +79,14 @@ class TaskEntity extends Equatable {
     }
 
     return DateFormat('yyyy-MM-dd').format(DateTime.now());
+  }
+
+  int getActivatedTime() {
+    if (duration != null) {
+      return duration!.amount;
+    } else {
+      return 0;
+    }
   }
 
   @override

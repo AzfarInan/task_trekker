@@ -10,7 +10,6 @@ class TaskManagerCubit extends Cubit<BaseState> {
   final List<TaskEntity> todoTasks = [];
   final List<TaskEntity> inProgressTasks = [];
   final List<TaskEntity> doneTasks = [];
-  TaskEntity? activeTask;
 
   final List<List<TaskEntity>> tasks = [
     [],
@@ -32,7 +31,6 @@ class TaskManagerCubit extends Cubit<BaseState> {
       } else if (element.isCompletedTask()) {
         doneTasks.add(element);
       } else if (element.isActiveTask()) {
-        activeTask = element;
         inProgressTasks.add(element);
       }
     }
@@ -53,8 +51,31 @@ class TaskManagerCubit extends Cubit<BaseState> {
 
   void moveTask(int fromColumn, int toColumn, TaskEntity task) {
     emit(const LoadingState());
+    task.labels.clear();
+    if (toColumn == 0) {
+      task.labels.add('TODO');
+    } else if (toColumn == 1) {
+      task.labels.add('In Progress');
+    } else if (toColumn == 2) {
+      task.labels.add('Completed');
+    }
     tasks[fromColumn].remove(task);
     tasks[toColumn].add(task);
     emit(SuccessState(data: tasks)); // Emit updated state
+  }
+
+  void updateActiveTask(TaskEntity task) {
+    emit(const LoadingState());
+    task.labels.clear();
+    task.labels.add('ACTIVE');
+    emit(SuccessState(data: tasks));
+  }
+
+  void inactiveActiveTask(TaskEntity task, int duration) {
+    emit(const LoadingState());
+    task.labels.clear();
+    task.labels.add('In Progress');
+    task.updateDuration(duration);
+    emit(SuccessState(data: tasks));
   }
 }
