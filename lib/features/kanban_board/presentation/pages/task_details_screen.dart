@@ -55,10 +55,16 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           if (state is GetTaskSuccessState) {
             setState(() {
               print(state.data.taskActivationTime);
-              activatedTime = state.data.taskActivationTime.difference(DateTime.now()).inMinutes;
-              print("Success Response Time 1: $activatedTime");
-              activatedTime = (widget.task.getActivatedTime() - activatedTime).abs() + widget.task.getActivatedTime();
-              print("Success Response Time 2: $activatedTime");
+              activatedTime = (state.data.taskActivationTime
+                      .difference(DateTime.now())
+                      .inMinutes)
+                  .abs();
+              print(activatedTime);
+
+              activatedTime =
+                  (widget.task.getActivatedTime() - activatedTime).abs() +
+                      widget.task.getActivatedTime();
+              print(activatedTime);
 
               autoStart = true;
             });

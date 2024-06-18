@@ -91,7 +91,12 @@ class _CommentSectionState extends State<CommentSection> {
                     );
                   }
 
-                  return const SizedBox();
+                  return Center(
+                    child: Text(
+                      'Something went wrong. Try again later.',
+                      style: textTheme.bodyLarge,
+                    ),
+                  );
                 },
               ),
             ),
