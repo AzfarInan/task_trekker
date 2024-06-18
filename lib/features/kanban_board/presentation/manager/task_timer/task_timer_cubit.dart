@@ -14,18 +14,15 @@ class TaskTimerCubit extends Cubit<BaseState> {
 
   /// Get Task
   Future<void> getTask(String taskId) async {
-    print('AZFAR: getTask');
     emit(const LoadingState());
     try {
       final CachedTaskEntity? task = await _cacheManager.getTaskById(taskId);
-      print("AZFAR: success: $task");
       if (task != null) {
         emit(GetTaskSuccessState(data: task));
       } else {
         emit(const ErrorState(data: 'Task not found'));
       }
     } catch (e) {
-      print("AZFAR: error: $e");
       emit(const ErrorState(data: 'An error occurred while fetching the task'));
     }
   }

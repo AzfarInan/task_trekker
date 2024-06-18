@@ -35,6 +35,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   void initState() {
     super.initState();
 
+    print("Time: ${widget.task.getActivatedTime()}");
     activatedTime = widget.task.getActivatedTime();
     if (widget.task.isActiveTask()) {
       BlocProvider.of<TaskTimerCubit>(context).getTask(widget.task.id);
@@ -49,14 +50,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         backgroundColor: AppColors.primary,
       ),
       body: BlocConsumer<TaskTimerCubit, BaseState>(
+        listenWhen: (previous, current) => previous != current,
         listener: (context, state) {
           if (state is GetTaskSuccessState) {
             setState(() {
-              activatedTime = state.data.taskActivationTime
-                      .difference(DateTime.now())
-                      .inMinutes *
-                  -1;
-              activatedTime += widget.task.getActivatedTime();
+              print(state.data.taskActivationTime);
+              activatedTime = state.data.taskActivationTime.difference(DateTime.now()).inMinutes;
+              print("Success Response Time 1: $activatedTime");
+              activatedTime = (widget.task.getActivatedTime() - activatedTime).abs() + widget.task.getActivatedTime();
+              print("Success Response Time 2: $activatedTime");
 
               autoStart = true;
             });
@@ -106,48 +108,60 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     widget.task.isActiveTask()) ...[
                   titleText('Track Time'),
                   const SizedBox(height: 4),
-                  StopwatchWidget(
-                    onStop: (duration) {
-                      /// print
-                      print("On Stop");
+                  if (state is GetTaskSuccessState ||
+                      state is SaveTaskSuccessState ||
+                      state is RemoveTaskSuccessState) ...[
+                    StopwatchWidget(
+                      onStop: (duration) {
+                        /// print
+                        print("On Stop");
 
-                      /// Remove The Task Time Locally
-                      BlocProvider.of<TaskTimerCubit>(context)
-                          .removeTask(widget.task.id);
-
-                      /// Activate task label
-                      BlocProvider.of<UpdateTaskCubit>(context).deactivateTask(
-                        taskId: widget.task.id,
-                        duration: duration.inMinutes,
-                      );
-
-                      BlocProvider.of<TaskManagerCubit>(context)
-                          .inactiveActiveTask(widget.task, duration.inMinutes);
-                    },
-                    onStart: (duration) {
-                      /// print
-                      print("On Start");
-
-                      if (!autoStart) {
-                        /// Save The Task Time Locally
-                        BlocProvider.of<TaskTimerCubit>(context).saveTask(
-                          CachedTaskEntity(
-                            taskId: widget.task.id,
-                            taskActivationTime: DateTime.now().add(duration),
-                          ),
-                        );
+                        /// Remove The Task Time Locally
+                        BlocProvider.of<TaskTimerCubit>(context)
+                            .removeTask(widget.task.id);
 
                         /// Activate task label
                         BlocProvider.of<UpdateTaskCubit>(context)
-                            .activateTask(taskId: widget.task.id);
+                            .deactivateTask(
+                          taskId: widget.task.id,
+                          duration: duration.inMinutes,
+                        );
 
                         BlocProvider.of<TaskManagerCubit>(context)
-                            .updateActiveTask(widget.task);
-                      }
-                    },
-                    autoStart: autoStart,
-                    initialMinutes: activatedTime,
-                  ),
+                            .inactiveActiveTask(
+                                widget.task, duration.inMinutes);
+                      },
+                      onStart: (duration) {
+                        if (!autoStart) {
+                          print("On Start");
+
+                          /// Save The Task Time Locally
+                          BlocProvider.of<TaskTimerCubit>(context).saveTask(
+                            CachedTaskEntity(
+                              taskId: widget.task.id,
+                              taskActivationTime:
+                                  widget.task.getActivatedTime() == 0
+                                      ? DateTime.now()
+                                      : DateTime.now().subtract(
+                                          Duration(
+                                              minutes: widget.task
+                                                  .getActivatedTime()),
+                                        ),
+                            ),
+                          );
+
+                          /// Activate task label
+                          BlocProvider.of<UpdateTaskCubit>(context)
+                              .activateTask(taskId: widget.task.id);
+
+                          BlocProvider.of<TaskManagerCubit>(context)
+                              .updateActiveTask(widget.task);
+                        }
+                      },
+                      autoStart: autoStart,
+                      initialMinutes: activatedTime,
+                    ),
+                  ],
                 ] else ...[
                   viewItem(
                     title: 'Task Duration',
