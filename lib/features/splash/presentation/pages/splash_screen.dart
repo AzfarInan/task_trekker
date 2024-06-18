@@ -28,6 +28,12 @@ class _SplashScreenState extends State<SplashScreen> {
       listener: (context, state) {
         if (state is SuccessState) {
           context.pushReplacementNamed('kanban-dashboard');
+        } else if (state is ErrorState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Something Went Wrong! Try again later.'),
+            ),
+          );
         }
       },
       child: Scaffold(
@@ -48,9 +54,17 @@ class _SplashScreenState extends State<SplashScreen> {
                 "assets/images/splash_image.jpg",
               ),
             ),
-            Lottie.asset(
-              'assets/animations/splash.json',
-              height: 150,
+            BlocBuilder<GetTaskCubit, BaseState>(
+              builder: (context, state) {
+                if (state is LoadingState) {
+                  return Lottie.asset(
+                    'assets/animations/splash.json',
+                    height: 150,
+                  );
+                }
+
+                return const SizedBox();
+              },
             ),
           ],
         ),
