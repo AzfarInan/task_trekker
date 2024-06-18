@@ -14,7 +14,7 @@ class TaskEntity extends Equatable {
   final bool isCompleted;
   final List<String> labels;
   final int priority;
-  final int commentCount;
+  int commentCount;
   final String creatorId;
   final DateTime createdAt;
   final Due? due;

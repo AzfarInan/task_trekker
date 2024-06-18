@@ -78,4 +78,13 @@ class TaskManagerCubit extends Cubit<BaseState> {
     task.updateDuration(duration);
     emit(SuccessState(data: tasks));
   }
+
+  void updateTaskCommentCount(String taskId) {
+    emit(const LoadingState());
+    final task = tasks
+        .expand((element) => element)
+        .firstWhere((element) => element.id == taskId);
+    task.commentCount = task.commentCount + 1;
+    emit(SuccessState(data: tasks));
+  }
 }

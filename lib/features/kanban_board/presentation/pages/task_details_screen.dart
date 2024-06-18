@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:task_trekker/core/base/base_state.dart';
 import 'package:task_trekker/core/cache_service/cached_task_entity.dart';
 import 'package:task_trekker/core/theme/app_colors.dart';
 import 'package:task_trekker/core/theme/text_theme.dart';
+import 'package:task_trekker/features/kanban_board/domain/entities/comment_entity.dart';
 import 'package:task_trekker/features/kanban_board/domain/entities/task_entity.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/add_comment/add_comment_cubit.dart';
+import 'package:task_trekker/features/kanban_board/presentation/manager/get_comments/get_comments_cubit.dart';
 import 'package:task_trekker/features/kanban_board/presentation/manager/task_manager/task_manager_cubit.dart';
 import 'package:task_trekker/features/kanban_board/presentation/manager/task_timer/task_timer_cubit.dart';
 import 'package:task_trekker/features/kanban_board/presentation/manager/update_task/update_task_cubit.dart';
 import 'package:task_trekker/features/kanban_board/presentation/widgets/stopwatch.dart';
+import 'package:task_trekker/features/shared/presentation/widgets/button.dart';
+
+part '../widgets/comment_section.dart';
+part '../widgets/comment_bottomsheet.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
   const TaskDetailsScreen({super.key, required this.task});
@@ -56,8 +64,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             setState(() {
               autoStart = false;
             });
-          }
-          else if (state is ErrorState) {
+          } else if (state is ErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: AppColors.error,
@@ -82,6 +89,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           return Container(
             padding: const EdgeInsets.all(16),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 viewItem(title: 'Title', body: widget.task.content),
@@ -152,11 +160,45 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     ),
                   ),
                 ],
+                CommentSection(taskId: widget.task.id),
               ],
             ),
           );
         },
       ),
+      floatingActionButton: BlocBuilder<AddCommentCubit, BaseState>(
+        builder: (context, state) {
+          return FloatingActionButton(
+            onPressed: () => _showCommentBottomSheet(context),
+            backgroundColor: AppColors.primary,
+            child: state is LoadingState
+                ? const CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                : const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showCommentBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: CommentBottomSheet(
+            taskId: widget.task.id,
+          ),
+        );
+      },
     );
   }
 
