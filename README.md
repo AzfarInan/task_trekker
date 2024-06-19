@@ -35,5 +35,6 @@ streamlined workflow!
 - Run `fvm flutter pub get`
 - Everything should be good to go. But if for some reason you are facing issues, try running `fvm flutter clean` and then `fvm flutter pub get` again.
 - Since we are using injectable, you need to run `fvm flutter packages pub run build_runner watch` to generate the code.
+- Run tests using `fvm flutter packages pub run build_runner watch` and then `fvm flutter test`
 
 

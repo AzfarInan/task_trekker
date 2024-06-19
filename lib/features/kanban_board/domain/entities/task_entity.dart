@@ -1,6 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 
+part 'due.dart';
+part 'task_duration.dart';
+
 class TaskEntity extends Equatable {
   final String id;
   final String? assignerId;
@@ -98,49 +101,5 @@ class TaskEntity extends Equatable {
         priority,
         due,
         duration,
-      ];
-}
-
-class Due extends Equatable {
-  final DateTime date;
-  final String? timezone;
-  final String dateString;
-  final String lang;
-  final bool isRecurring;
-  final DateTime? datetime;
-
-  const Due({
-    required this.date,
-    this.timezone,
-    required this.dateString,
-    required this.lang,
-    required this.isRecurring,
-    this.datetime,
-  });
-
-  @override
-  List<Object?> get props => [
-        date,
-        timezone,
-        dateString,
-        lang,
-        isRecurring,
-        datetime,
-      ];
-}
-
-class TaskDuration extends Equatable {
-  final int amount;
-  final String unit;
-
-  const TaskDuration({
-    required this.amount,
-    required this.unit,
-  });
-
-  @override
-  List<Object?> get props => [
-        amount,
-        unit,
       ];
 }

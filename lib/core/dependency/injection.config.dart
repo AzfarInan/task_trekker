@@ -17,11 +17,11 @@ import '../../features/kanban_board/data/repositories/task_repository_impl.dart'
     as _i11;
 import '../../features/kanban_board/domain/repositories/task_repository.dart'
     as _i10;
-import '../../features/kanban_board/domain/use_cases/add_comment.dart' as _i16;
-import '../../features/kanban_board/domain/use_cases/add_task.dart' as _i13;
+import '../../features/kanban_board/domain/use_cases/add_comment.dart' as _i12;
+import '../../features/kanban_board/domain/use_cases/add_task.dart' as _i14;
 import '../../features/kanban_board/domain/use_cases/get_comments.dart' as _i15;
-import '../../features/kanban_board/domain/use_cases/get_tasks.dart' as _i14;
-import '../../features/kanban_board/domain/use_cases/update_task.dart' as _i12;
+import '../../features/kanban_board/domain/use_cases/get_tasks.dart' as _i16;
+import '../../features/kanban_board/domain/use_cases/update_task.dart' as _i13;
 import '../../features/kanban_board/presentation/manager/add_comment/add_comment_cubit.dart'
     as _i20;
 import '../../features/kanban_board/presentation/manager/add_task/add_task_cubit.dart'
@@ -62,24 +62,24 @@ extension GetItInjectableX on _i1.GetIt {
         () => _i9.TaskRemoteDataSourceImpl(gh<_i4.NetworkService>()));
     gh.lazySingleton<_i10.TaskRepository>(
         () => _i11.TaskRepositoryImpl(gh<_i9.TaskRemoteDataSource>()));
-    gh.factory<_i12.UpdateTask>(
-        () => _i12.UpdateTask(gh<_i10.TaskRepository>()));
-    gh.factory<_i13.AddTask>(() => _i13.AddTask(gh<_i10.TaskRepository>()));
-    gh.factory<_i14.GetTasks>(() => _i14.GetTasks(gh<_i10.TaskRepository>()));
+    gh.factory<_i12.AddComment>(
+        () => _i12.AddComment(gh<_i10.TaskRepository>()));
+    gh.factory<_i13.UpdateTask>(
+        () => _i13.UpdateTask(gh<_i10.TaskRepository>()));
+    gh.factory<_i14.AddTask>(() => _i14.AddTask(gh<_i10.TaskRepository>()));
     gh.factory<_i15.GetComments>(
         () => _i15.GetComments(gh<_i10.TaskRepository>()));
-    gh.factory<_i16.AddComment>(
-        () => _i16.AddComment(gh<_i10.TaskRepository>()));
+    gh.factory<_i16.GetTasks>(() => _i16.GetTasks(gh<_i10.TaskRepository>()));
     gh.factory<_i17.UpdateTaskCubit>(
-        () => _i17.UpdateTaskCubit(usecase: gh<_i12.UpdateTask>()));
+        () => _i17.UpdateTaskCubit(usecase: gh<_i13.UpdateTask>()));
     gh.factory<_i18.GetTaskCubit>(
-        () => _i18.GetTaskCubit(useCase: gh<_i14.GetTasks>()));
+        () => _i18.GetTaskCubit(useCase: gh<_i16.GetTasks>()));
     gh.factory<_i19.GetCommentsCubit>(
         () => _i19.GetCommentsCubit(useCase: gh<_i15.GetComments>()));
     gh.factory<_i20.AddCommentCubit>(
-        () => _i20.AddCommentCubit(usecase: gh<_i16.AddComment>()));
+        () => _i20.AddCommentCubit(usecase: gh<_i12.AddComment>()));
     gh.factory<_i21.AddTaskCubit>(
-        () => _i21.AddTaskCubit(usecase: gh<_i13.AddTask>()));
+        () => _i21.AddTaskCubit(usecase: gh<_i14.AddTask>()));
     return this;
   }
 }
