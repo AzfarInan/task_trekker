@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:task_trekker/core/base/failure.dart';
-import 'package:task_trekker/features/kanban_board/data/data_sources/task_data_resource.dart';
+import 'package:task_trekker/features/kanban_board/data/data_sources/task_data_source.dart';
 import 'package:task_trekker/features/kanban_board/data/models/add_comment_request_model.dart';
 import 'package:task_trekker/features/kanban_board/data/models/add_task_request_model.dart';
 import 'package:task_trekker/features/kanban_board/data/models/update_task_request_model.dart';
